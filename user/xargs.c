@@ -65,7 +65,7 @@ main(int argc, char *argv[])
 
   int cur = 0;
   while((cur = readline(new_argv, argc - 1)) != 0) {
-    new_argv[cur] = 0;
+    new_argv[cur] = '\0';
 
     run(cmd, new_argv);
 
