@@ -686,7 +686,7 @@ procdump(void)
 
 // used by sysinfo
 int
-proc_not_unsed_num(void)
+num_of_processes(void)
 {
   int nproc = 0;
   for (struct proc *p = proc; p < &proc[NPROC]; p++) {

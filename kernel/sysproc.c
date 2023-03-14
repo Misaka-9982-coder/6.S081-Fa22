@@ -110,18 +110,12 @@ sys_sysinfo(void)
   uint64 si_addr;
 
   argaddr(0, &si_addr);
-  int nproc;
-  int freemem;
-
-  nproc = proc_not_unsed_num();
-  freemem = free_mem_num();
 
   struct sysinfo sysinfo;
-  sysinfo.freemem = freemem;
-  sysinfo.nproc = nproc;
+  sysinfo.freemem = free_mem_num();
+  sysinfo.nproc = num_of_processes();
 
-  struct proc *p = myproc();
-  if (copyout(p->pagetable, si_addr, (char *)&sysinfo, sizeof(sysinfo)) < 0)
+  if (copyout(myproc()->pagetable, si_addr, (char *)&sysinfo, sizeof(sysinfo)) < 0)
     return -1;
 
   return 0;
