@@ -96,5 +96,5 @@ free_mem_num(void)
     r = r->next;
   }
   release(&kmem.lock);
-  return free_num * 4096;
+  return free_num * PGSIZE;
 }
