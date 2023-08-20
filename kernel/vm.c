@@ -286,27 +286,34 @@ freewalk(pagetable_t pagetable)
   kfree((void*)pagetable);
 }
 
-void vmprintlevel(pagetable_t pt, int level) {
-  char *delim = 0;
-  if (level == 2) delim = "..";
-  if (level == 1) delim = ".. ..";
-  if (level == 0) delim = ".. .. ..";
+void
+vmprint(pagetable_t pagetable)
+{
+  static int printdeep = 0;
+  
+  if (printdeep == 0) {
+    printf("page table %p\n", (uint64)pagetable);
+  }
+
   for (int i = 0; i < 512; i++) {
-    pte_t pte = pt[i];
-    if ((pte & PTE_V)) {
-      //  this PTE points to a lower level page table.
-      printf("%s%d: pte %p pa %p\n", delim, i, pte, PTE2PA(pte));
-      uint64 child = PTE2PA(pte);
-      if (level != 0) {
-        vmprintlevel((pagetable_t)child, level - 1);
+    pte_t pte = pagetable[i];
+
+    if (pte & PTE_V) {
+      for (int j = 0; j <= printdeep; j++) {
+        printf("..");
       }
+      
+      printf("%d: pte %p pa %p\n", i, (uint64)pte, (uint64)PTE2PA(pte));
+    }
+    
+    // pintes to lower-level page table
+    if((pte & PTE_V) && (pte & (PTE_R|PTE_W|PTE_X)) == 0){
+      printdeep++;
+      uint64 child_pa = PTE2PA(pte);
+      vmprint((pagetable_t)child_pa);
+      printdeep--;
     }
   }
-}
-
-void vmprint(pagetable_t pt) {
-  printf("page table %p\n", pt);
-  vmprintlevel(pt, 2);
 }
 
 // Free user memory pages,
